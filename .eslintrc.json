@@ -1,0 +1,49 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "ignorePatterns": [
+    ".vscode/",
+    "build/",
+    "coverage/",
+    "dist/",
+    "node_modules/",
+    "public/",
+    "src/types/phaser/",
+    "tmp/"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "extends": [
+        "plugin:import/typescript",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+      ]
+    }
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["tsconfig.json"]
+  },
+  "root": true,
+  "rules": {
+    "import/exports-last": "warn",
+    "import/no-anonymous-default-export": "warn",
+    "import/no-relative-parent-imports": "warn",
+    "sort-imports": "warn"
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    }
+  }
+}

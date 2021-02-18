@@ -1,0 +1,11 @@
+.parcel-cache/
+dist/
+node_modules/
+
+.DS_Store
+.env*
+!.env.sample
+*.code-workspace
+*.pem
+*.sqlite*
+*.tsbuildinfo
