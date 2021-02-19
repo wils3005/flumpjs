@@ -1,9 +1,10 @@
 import Path from "path";
+import TerserPlugin from "terser-webpack-plugin";
 import WebpackNodeExternals from "webpack-node-externals";
 
 const base = {
   devtool: "source-map",
-  mode: "development",
+  mode: "production",
   module: {
     rules: [
       {
@@ -18,6 +19,17 @@ const base = {
           configFile: Path.join(__dirname, "tsconfig.build.json"),
         },
       },
+    ],
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+          keep_fnames: true,
+        },
+      }),
     ],
   },
   output: {

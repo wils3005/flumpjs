@@ -12,6 +12,7 @@ devDependencies:
   '@types/express-pino-logger': 4.0.2
   '@types/node': 14.14.22
   '@types/pino': 6.3.5
+  '@types/terser-webpack-plugin': 5.0.2_webpack-cli@4.5.0
   '@types/uuid': 8.3.0
   '@types/webpack-dev-middleware': 4.1.0
   '@types/webpack-dev-server': 3.11.1
@@ -32,6 +33,7 @@ devDependencies:
   pnpm: 5.17.2
   prettier: 2.2.1
   rimraf: 3.0.2
+  terser-webpack-plugin: 5.1.1_webpack@5.23.0
   ts-loader: 8.0.17_typescript@4.1.3+webpack@5.23.0
   ts-node: 9.1.1_typescript@4.1.3
   ts-node-dev: 1.1.1_typescript@4.1.3
@@ -355,6 +357,15 @@ packages:
     dev: true
     resolution:
       integrity: sha512-W+bw9ds02rAQaMvaLYxAbJ6cvguW/iJXNT6lTssS1ps6QdrMKttqEAMEG/b5CR8TZl3/L7/lH0ZV5nNR1LXikA==
+  /@types/terser-webpack-plugin/5.0.2_webpack-cli@4.5.0:
+    dependencies:
+      terser: 5.6.0
+      webpack: 5.23.0_webpack-cli@4.5.0
+    dev: true
+    peerDependencies:
+      webpack-cli: '*'
+    resolution:
+      integrity: sha512-YcAT1D4gjho1jqc/gjn1ojHFtQtrGHaHPqz5nDMiN5Jj9BeigjDkS2w010PvUnPkdVY3GerDFbY62TArtDBuDQ==
   /@types/uglify-js/3.12.0:
     dependencies:
       source-map: 0.6.1
@@ -7680,6 +7691,7 @@ specifiers:
   '@types/express-pino-logger': ^4.0.2
   '@types/node': 14.14.22
   '@types/pino': ^6.3.5
+  '@types/terser-webpack-plugin': ^5.0.2
   '@types/uuid': ^8.3.0
   '@types/webpack-dev-middleware': ^4.1.0
   '@types/webpack-dev-server': ^3.11.1
@@ -7706,6 +7718,7 @@ specifiers:
   prettier: 2.2.1
   rimraf: ^3.0.2
   sqlite3: ^5.0.1
+  terser-webpack-plugin: ^5.1.1
   ts-loader: ^8.0.17
   ts-node: ^9.1.1
   ts-node-dev: ^1.1.1

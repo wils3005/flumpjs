@@ -1,7 +1,7 @@
 import * as Zod from "zod";
 import ClientBase from "./client-base";
 import LogLevel from "../log-level";
-import Message from "./message";
+import Message from "../message";
 
 class WebSocketManager extends ClientBase {
   static readonly WS_URL = "ws://localhost:8080";

@@ -1,4 +1,4 @@
-import Base from "../base";
+import Base from "../wrappers/wrapper";
 import Pino from "pino";
 
 abstract class ClientBase extends Base {

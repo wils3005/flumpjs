@@ -1,10 +1,9 @@
 import * as UUID from "uuid";
-import Base from "./base";
-import JSONObject from "./json-object";
+import * as Zod from "zod";
 import LogLevel from "./log-level";
 import WebSocket from "ws";
 
-class Session extends Base {
+class Session {
   static readonly all = new Set<Session>();
 
   static ids(): string {
@@ -17,7 +16,6 @@ class Session extends Base {
   readonly id = UUID.v4();
 
   constructor(webSocket: WebSocket) {
-    super();
     this.log("constructor");
     webSocket.onclose = () => this.close();
     webSocket.onerror = (ev) => this.error(ev);
@@ -48,7 +46,9 @@ class Session extends Base {
         if (session.webSocket == target) return;
 
         session.webSocket.send(
-          JSON.stringify(JSONObject.parse(JSON.parse(String(data))))
+          JSON.stringify(
+            Zod.record(Zod.unknown()).parse(JSON.parse(String(data)))
+          )
         );
       });
     } catch (e) {

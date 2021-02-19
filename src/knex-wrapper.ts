@@ -1,10 +1,9 @@
 import * as Zod from "zod";
-import Base from "./base";
 import Knex from "knex";
 import Path from "path";
 import User from "./user";
 
-class KnexWrapper extends Base {
+class KnexWrapper {
   readonly env = Zod.object({
     NODE_ENV: Zod.string(),
   }).parse(process.env);
@@ -18,7 +17,6 @@ class KnexWrapper extends Base {
   });
 
   constructor() {
-    super();
     User.knex(this.knex);
   }
 }
