@@ -1,32 +1,28 @@
 import * as Zod from "zod";
+import Base from "./base";
 import Express from "express";
 import ExpressPinoLogger from "express-pino-logger";
 import HTTP from "http";
 import KnexWrapper from "./knex-wrapper";
 import LogLevel from "./log-level";
-import Pino from "pino";
 import REPL from "repl";
 import Session from "./session";
 import WebSocket from "ws";
 
-class Application {
+class Application extends Base {
   env = Zod.object({
     PORT: Zod.string(),
     REPL: Zod.string().optional(),
     STATIC_PATH: Zod.string(),
   }).parse(process.env);
 
-  readonly loggerOptions: Pino.LoggerOptions = {
-    level: "debug",
-  };
-
-  readonly pino = Pino(this.loggerOptions);
   knex = new KnexWrapper().knex;
   express: Express.Express = Express();
   httpServer: HTTP.Server;
   webSocketServer: WebSocket.Server;
 
   constructor() {
+    super();
     this.express.use(ExpressPinoLogger({ logger: this.pino }));
     this.express.use(Express.static(this.env.STATIC_PATH));
     this.express.on("mount", () => this.mount());
@@ -64,14 +60,6 @@ class Application {
 
   headers(): void {
     this.log("headers");
-  }
-
-  log(msg: unknown, level = LogLevel.DEBUG): void {
-    this.pino[level]({
-      globalName: globalThis.constructor.name,
-      name: this.constructor.name,
-      msg,
-    });
   }
 
   mount(): void {

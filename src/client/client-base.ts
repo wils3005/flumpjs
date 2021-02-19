@@ -1,4 +1,4 @@
-import Base from "../wrappers/wrapper";
+import Base from "../base";
 import Pino from "pino";
 
 abstract class ClientBase extends Base {
@@ -6,7 +6,7 @@ abstract class ClientBase extends Base {
 
   bc = new BroadcastChannel(ClientBase.BROADCAST_CHANNEL_NAME);
 
-  readonly loggerOptions: Pino.LoggerOptions = {
+  loggerOptions: Pino.LoggerOptions = {
     browser: { asObject: true },
     level: "debug",
   };

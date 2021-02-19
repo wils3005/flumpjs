@@ -1,9 +1,10 @@
 import * as UUID from "uuid";
 import * as Zod from "zod";
+import Base from "./base";
 import LogLevel from "./log-level";
 import WebSocket from "ws";
 
-class Session {
+class Session extends Base {
   static readonly all = new Set<Session>();
 
   static ids(): string {
@@ -16,6 +17,7 @@ class Session {
   readonly id = UUID.v4();
 
   constructor(webSocket: WebSocket) {
+    super();
     this.log("constructor");
     webSocket.onclose = () => this.close();
     webSocket.onerror = (ev) => this.error(ev);
