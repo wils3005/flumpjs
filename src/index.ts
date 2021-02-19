@@ -52,6 +52,7 @@ class Application extends Base {
 
   connection(socket: WebSocket): void {
     new Session(socket);
+    Session.all.forEach((x) => x.webSocket.send(Session.ids()));
   }
 
   error(): void {

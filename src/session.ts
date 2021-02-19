@@ -8,9 +8,7 @@ class Session extends Base {
   static readonly all = new Set<Session>();
 
   static ids(): string {
-    return JSON.stringify({
-      ids: Array.from(this.all).map((s) => s.id),
-    });
+    return JSON.stringify(Array.from(this.all).map((s) => s.id));
   }
 
   readonly webSocket: WebSocket;
