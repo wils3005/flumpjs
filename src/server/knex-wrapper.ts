@@ -4,11 +4,11 @@ import Path from "path";
 import User from "./user";
 
 class KnexWrapper {
-  readonly env = Zod.object({
+  env = Zod.object({
     NODE_ENV: Zod.string(),
   }).parse(process.env);
 
-  readonly knex = Knex({
+  knex = Knex({
     client: "sqlite3",
     connection: {
       filename: Path.join(process.cwd(), `${this.env.NODE_ENV}.sqlite3`),

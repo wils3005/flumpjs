@@ -1,5 +1,7 @@
-import ClientBase from "./client-base";
+import Logger from "../shared/logger";
 
-class ServiceWorkerApplication extends ClientBase {}
+class ServiceWorkerApplication {
+  log = Logger.log.bind(this);
+}
 
 export default ServiceWorkerApplication;

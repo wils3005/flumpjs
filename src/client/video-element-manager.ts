@@ -1,22 +1,26 @@
 import * as Zod from "zod";
-import ClientBase from "./client-base";
-import LogLevel from "../log-level";
+import Logger from "../shared/logger";
+import WindowApplication from "./window-application";
 
-class VideoElementManager extends ClientBase {
+class VideoElementManager {
   static readonly CONSTRAINTS = {
     video: true,
     audio: true,
   };
 
+  app: WindowApplication;
+  log = Logger.log.bind(this);
+
   private _element?: HTMLVideoElement;
   private _stream?: MediaStream;
 
-  constructor() {
-    super();
+  constructor(app: WindowApplication) {
+    this.app = app;
+
     globalThis.navigator.mediaDevices
       .getUserMedia(VideoElementManager.CONSTRAINTS)
       .then((x) => (this.stream = x))
-      .catch((x) => this.log(x, LogLevel.ERROR));
+      .catch((x) => this.log(x, "error"));
   }
 
   get element(): HTMLVideoElement {
@@ -24,7 +28,7 @@ class VideoElementManager extends ClientBase {
   }
 
   set element(element: HTMLVideoElement) {
-    element.onerror = (ev) => this.log(ev, LogLevel.ERROR);
+    element.onerror = (ev) => this.log(ev, "error");
     element.autoplay = true;
 
     // local or remote stream?

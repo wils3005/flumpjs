@@ -1,16 +1,19 @@
 import * as Zod from "zod";
-import ClientBase from "./client-base";
-import LogLevel from "../log-level";
+import Logger from "../shared/logger";
+import WindowApplication from "./window-application";
 
-class ServiceWorkerManager extends ClientBase {
+class ServiceWorkerManager {
   static readonly SW_URL = "app.js";
+
+  app: WindowApplication;
+  log = Logger.log.bind(this);
 
   private _container?: ServiceWorkerContainer;
   private _registration?: ServiceWorkerRegistration;
   private _worker?: ServiceWorker;
 
-  constructor() {
-    super();
+  constructor(app: WindowApplication) {
+    this.app = app;
     this.container = globalThis.navigator.serviceWorker;
   }
 
@@ -21,12 +24,12 @@ class ServiceWorkerManager extends ClientBase {
   set container(container: ServiceWorkerContainer) {
     container.oncontrollerchange = () => this.log("controllerChange");
     container.onmessage = () => this.log("message");
-    container.onmessageerror = () => this.log("messageError", LogLevel.ERROR);
+    container.onmessageerror = () => this.log("messageError", "error");
 
     void container
       .register(ServiceWorkerManager.SW_URL)
       .then((registration) => (this.registration = registration))
-      .catch((r) => this.log(r, LogLevel.ERROR));
+      .catch((r) => this.log(r, "error"));
 
     this._container = container;
   }
@@ -62,7 +65,7 @@ class ServiceWorkerManager extends ClientBase {
   }
 
   error(): void {
-    this.log("error", LogLevel.ERROR);
+    this.log("error", "error");
   }
 }
 

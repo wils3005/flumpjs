@@ -1,29 +1,23 @@
 import * as Zod from "zod";
-import ClientBase from "./client-base";
-import LogLevel from "../log-level";
+import Logger from "../shared/logger";
+import WindowApplication from "./window-application";
 
-enum DBNames {
-  DB1 = "db1",
-}
+class DatabaseManager {
+  static NAME = "db1";
+  static STORE = "object-store-1";
 
-class DatabaseManager extends ClientBase {
-  static all = new Set<DatabaseManager>();
+  app: WindowApplication;
+  log = Logger.log.bind(this);
+  request: IDBOpenDBRequest;
+  _db?: IDBDatabase;
 
-  static init(): Set<DatabaseManager> {
-    Object.values(DBNames).forEach((s) => new DatabaseManager(s));
-    return DatabaseManager.all;
-  }
-
-  dbName: DBNames;
-
-  private _db?: IDBDatabase;
-  private _request?: IDBOpenDBRequest;
-
-  constructor(dbName: DBNames) {
-    super();
-    this.dbName = dbName;
-    this.request = globalThis.indexedDB.open(this.dbName);
-    DatabaseManager.all.add(this);
+  constructor(app: WindowApplication) {
+    this.app = app;
+    this.request = globalThis.indexedDB.open(DatabaseManager.NAME);
+    this.request.onblocked = (x) => this.log(x, "warn");
+    this.request.onerror = (x) => this.log(x, "error");
+    this.request.onsuccess = (x) => this.success(x);
+    this.request.onupgradeneeded = (x) => this.upgradeNeeded(x);
   }
 
   get db(): IDBDatabase {
@@ -31,34 +25,45 @@ class DatabaseManager extends ClientBase {
   }
 
   set db(db: IDBDatabase) {
-    db.onabort = (ev) => this.log(ev, LogLevel.WARN);
+    db.onabort = (ev) => this.log(ev, "warn");
     db.onclose = (ev) => this.log(ev);
-    db.onerror = (ev) => this.log(ev, LogLevel.ERROR);
+    db.onerror = (ev) => this.log(ev, "error");
     db.onversionchange = (ev) => this.log(ev);
     this._db = db;
   }
 
-  get request(): IDBOpenDBRequest {
-    return Zod.instanceof(IDBOpenDBRequest).parse(this._request);
+  get(query: string): IDBRequest {
+    return this.objectStore("readonly").get(query);
   }
 
-  set request(request: IDBOpenDBRequest) {
-    request.onblocked = (ev) => this.log(ev, LogLevel.WARN);
-    request.onerror = (ev) => this.log(ev, LogLevel.ERROR);
-    request.onsuccess = (ev) => this.success(ev);
-    request.onupgradeneeded = () => this.upgradeNeeded();
-    this._request = request;
+  put(key: string, value: unknown): void {
+    this.objectStore("readwrite").put(value, key);
+  }
+
+  objectStore(
+    mode: "readonly" | "readwrite" | "versionchange"
+  ): IDBObjectStore {
+    return this.transaction(mode).objectStore(DatabaseManager.STORE);
   }
 
   success(event: Event): void {
-    this.log("success");
     this.db = Zod.instanceof(IDBOpenDBRequest).parse(event.target).result;
   }
 
-  upgradeNeeded(): void {
-    this.log("upgradeNeeded");
+  transaction(
+    mode: "readonly" | "readwrite" | "versionchange"
+  ): IDBTransaction {
+    return this.db.transaction(DatabaseManager.STORE, mode);
+  }
+
+  upgradeNeeded(event: IDBVersionChangeEvent): void {
+    const req = Zod.instanceof(IDBRequest).parse(event.target);
+    const db = Zod.instanceof(IDBDatabase).parse(req.result);
+
+    db.createObjectStore(DatabaseManager.STORE, {
+      autoIncrement: true,
+    });
   }
 }
 
 export default DatabaseManager;
-export { DBNames };
