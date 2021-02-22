@@ -1,6 +1,6 @@
 import * as Zod from "zod";
-import Logger from "../shared/logger";
-import WindowApplication from "./window-application";
+import Logger from "../../shared/logger";
+import WindowApplication from ".";
 
 class VideoElementManager {
   static readonly CONSTRAINTS = {

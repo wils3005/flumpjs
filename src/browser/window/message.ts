@@ -8,18 +8,27 @@ import * as Zod from "zod";
 
 // type MessageTypes = Zod.infer<typeof MessageTypes>;
 
-// data: Zod.union([Zod.record(Zod.unknown()), Zod.array(Zod.unknown())]),
+// {
+//   candidate?: string;
+//   sdpMLineIndex?: number | null;
+//   sdpMid?: string | null;
+//   usernameFragment?: string | null;
+// }
+
+const RTCSessionDescriptionInit = Zod.object({
+  sdp: Zod.string().optional(),
+  type: Zod.enum(["answer", "offer", "pranswer", "rollback"]).optional(),
+});
+
+type RTCSessionDescriptionInit = Zod.infer<typeof RTCSessionDescriptionInit>;
+
 const MessageOptions = Zod.object({
-  id: Zod.string().optional(),
+  sender: Zod.string(),
+  recipient: Zod.string(),
   ids: Zod.array(Zod.string()).optional(),
-  offer: Zod.object({
-    sdp: Zod.string().optional(),
-    type: Zod.enum(["offer", "answer", "pranswer", "rollback"]).optional(),
-  }).optional(),
-  answer: Zod.object({
-    sdp: Zod.string().optional(),
-    type: Zod.enum(["offer", "answer", "pranswer", "rollback"]).optional(),
-  }).optional(),
+  offer: RTCSessionDescriptionInit.optional(),
+  answer: RTCSessionDescriptionInit.optional(),
+  candidate: Zod.instanceof(RTCIceCandidate).optional(),
 });
 
 type MessageOptions = Zod.infer<typeof MessageOptions>;
@@ -31,27 +40,23 @@ class Message {
   }
 
   messageOptions: MessageOptions;
-  id?: string;
+  sender: string;
+  recipient: string;
   ids?: string[];
-
-  offer?: {
-    sdp?: string;
-    type?: RTCSdpType;
-  };
-
-  answer?: {
-    sdp?: string;
-    type?: RTCSdpType;
-  };
+  offer?: RTCSessionDescriptionInit;
+  answer?: RTCSessionDescriptionInit;
+  candidate?: RTCIceCandidate;
 
   constructor(messageOptions: MessageOptions) {
     this.messageOptions = messageOptions;
     // this.type = messageOptions.type;
-    this.id = messageOptions.id;
+    this.sender = messageOptions.sender;
+    this.recipient = messageOptions.recipient;
     this.ids = messageOptions.ids;
     // this.data = messageOptions.data;
     this.offer = messageOptions.offer;
     this.answer = messageOptions.answer;
+    this.candidate = messageOptions.candidate;
   }
 
   toString(): string {
@@ -60,17 +65,3 @@ class Message {
 }
 
 export default Message;
-
-// try {
-//   Connection.all.forEach((session) => {
-//     if (session.webSocket == target) return;
-
-//     session.webSocket.send(
-//       JSON.stringify(
-//         Zod.record(Zod.unknown()).parse(JSON.parse(String(data)))
-//       )
-//     );
-//   });
-// } catch (e) {
-//   this.log(e, "error");
-// }

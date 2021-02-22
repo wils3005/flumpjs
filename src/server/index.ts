@@ -24,15 +24,8 @@ class Server {
   constructor() {
     this.express.use(ExpressPinoLogger({ logger: Logger.pino }));
     this.express.use(Express.static(this.env.STATIC_PATH));
-    this.express.on("mount", () => this.log("mount"));
 
     this.httpServer = this.express.listen(this.env.PORT);
-    this.httpServer.on("close", () => this.log("close", "warn"));
-    this.httpServer.on("connection", () => this.log("connection"));
-    this.httpServer.on("error", () => this.log("error", "error"));
-    this.httpServer.on("listening", () => this.log("listening"));
-    this.httpServer.on("request", () => this.log("request"));
-    this.httpServer.on("upgrade", () => this.log("upgrade"));
 
     this.webSocketServer = new WebSocket.Server({ server: this.httpServer });
     this.webSocketServer.on("close", () => this.log("close", "warn"));
@@ -45,5 +38,7 @@ class Server {
     }
   }
 }
+
+new Server();
 
 export default Server;

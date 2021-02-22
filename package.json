@@ -10,7 +10,7 @@
     "knex:seed": "npm run knex -- seed:run",
     "lint": "eslint --format compact --fix --report-unused-disable-directives .",
     "prestart": "npm run build",
-    "start": "node -r dotenv/config ./dist/server.js",
+    "start": "node -r dotenv/config ./dist/server/app.js",
     "ts-node": "ts-node --require dotenv/config --transpile-only"
   },
   "dependencies": {

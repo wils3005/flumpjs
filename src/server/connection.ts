@@ -1,7 +1,7 @@
 import * as UUID from "uuid";
 import * as Zod from "zod";
 import Logger from "../shared/logger";
-import Message from "../shared/message";
+import Message from "./message";
 import WebSocket from "ws";
 
 class Connection {
@@ -22,15 +22,13 @@ class Connection {
     webSocket.onmessage = (x) => this.message(x);
     webSocket.onopen = () => this.open();
 
-    Connection.all.set(this.id, this);
-    this.send(new Message({ id: this.id }));
+    this.send(
+      new Message({ sender: "", recipient: this.id, ids: Connection.ids })
+    );
 
-    Connection.all.forEach((x) => {
-      x.webSocket.send(new Message({ ids: Connection.ids }).toString());
-    });
+    Connection.all.set(this.id, this);
   }
 
-  // (event: WebSocket.CloseEvent)
   close(): void {
     this.log("close");
     Connection.all.delete(this.id);
@@ -43,17 +41,17 @@ class Connection {
   }
 
   message(event: WebSocket.MessageEvent): void {
-    this.log("message");
     const message = Message.parse(event.data);
 
-    if (message.id) {
-      Zod.instanceof(Connection)
-        .parse(Connection.all.get(message.id))
-        .send(message);
-    }
+    this.log(
+      `receiving from ${message.sender}; sending to ${message.recipient}`
+    );
+
+    Zod.instanceof(Connection)
+      .parse(Connection.all.get(message.recipient))
+      .send(message);
   }
 
-  // (event: WebSocket.OpenEvent)
   open(): void {
     this.log("open");
   }

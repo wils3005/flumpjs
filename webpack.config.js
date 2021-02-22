@@ -35,7 +35,7 @@ const base = {
   output: {
     assetModuleFilename: "[name][ext]",
     globalObject: "this",
-    path: Path.join(__dirname, "dist"),
+    path: Path.join(__dirname, "dist", "server"),
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
@@ -45,7 +45,7 @@ const base = {
 const server = {
   ...base,
   entry: {
-    server: Path.join(__dirname, "src", "index.ts"),
+    app: Path.join(__dirname, "src", "server", "index.ts"),
   },
   externalsPresets: { node: true },
   externals: [WebpackNodeExternals()],
@@ -55,12 +55,12 @@ const server = {
 const client = {
   ...base,
   entry: {
-    app: Path.join(__dirname, "src", "client", "index.ts"),
+    app: Path.join(__dirname, "src", "browser", "index.ts"),
   },
   output: {
     assetModuleFilename: "[name][ext]",
     globalObject: "this",
-    path: Path.join(__dirname, "dist", "client"),
+    path: Path.join(__dirname, "dist", "browser"),
   },
 };
 
