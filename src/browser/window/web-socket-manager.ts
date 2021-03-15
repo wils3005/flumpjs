@@ -38,11 +38,11 @@ class WebSocketManager {
 
       // DB
       if (message.sender == "" && message.recipient)
-        this.app.id = message.recipient;
+        this.app.setID(message.recipient);
 
       if (message.ids) {
         message.ids.forEach((id) => {
-          if (id == this.app.id) return;
+          if (id == this.app.getID()) return;
 
           // void new PeerConnectionManager(id, this.app, this).makeCall();
         });

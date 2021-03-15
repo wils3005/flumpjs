@@ -17,19 +17,6 @@ class BrowserApplication {
 
   private _id?: string;
 
-  get id(): string {
-    if (this._id) return this._id;
-
-    return (this.id = Zod.string().parse(
-      this.databaseManager.get("id").result
-    ));
-  }
-
-  set id(id: string) {
-    this.databaseManager.put("id", id);
-    this._id = id;
-  }
-
   constructor() {
     switch (globalThis.constructor.name) {
       case "ServiceWorkerGlobalScope":
@@ -45,6 +32,17 @@ class BrowserApplication {
       default:
         throw "oh no";
     }
+  }
+
+  getID(): string {
+    if (this._id) return this._id;
+
+    return Zod.string().parse(this.databaseManager.get("id").result);
+  }
+
+  setID(id: string): void {
+    this.databaseManager.put("id", id);
+    this._id = id;
   }
 
   logger(msg: unknown, level: LogLevel = "debug"): void {
