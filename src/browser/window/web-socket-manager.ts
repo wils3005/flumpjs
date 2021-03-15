@@ -1,17 +1,15 @@
 import * as Zod from "zod";
-import Logger from "../../shared/logger";
+import BrowserApplication from "..";
 import Message from "./message";
 import PeerConnectionManager from "./peer-connection-manager";
-import WindowApplication from ".";
 
 class WebSocketManager {
   static readonly WS_URL = "ws://localhost:8080";
 
-  app: WindowApplication;
-  log = Logger.log.bind(this);
+  app: BrowserApplication;
   webSocket: WebSocket;
 
-  constructor(app: WindowApplication) {
+  constructor(app: BrowserApplication) {
     this.app = app;
     this.webSocket = this.create();
   }
@@ -26,11 +24,11 @@ class WebSocketManager {
   }
 
   close(): void {
-    this.log("close");
+    this.app.logger("close");
   }
 
   error(): void {
-    this.log("error", "error");
+    this.app.logger("error", "error");
     this.webSocket.close();
   }
 
@@ -46,15 +44,15 @@ class WebSocketManager {
         message.ids.forEach((id) => {
           if (id == this.app.id) return;
 
-          void new PeerConnectionManager(id, this.app, this).makeCall();
+          // void new PeerConnectionManager(id, this.app, this).makeCall();
         });
       }
 
       // 3)
       if (message.offer) {
-        await new PeerConnectionManager(message.sender, this.app, this).answer(
-          message.offer
-        );
+        // await new PeerConnectionManager(message.sender, this.app, this).answer(
+        //   message.offer
+        // );
       }
 
       // 5)
@@ -67,18 +65,18 @@ class WebSocketManager {
       }
 
       if (message.candidate) {
-        this.log({ wat: message });
+        this.app.logger({ wat: message });
         await Zod.instanceof(PeerConnectionManager)
           .parse(PeerConnectionManager.all.get(message.sender))
           .connection.addIceCandidate(message.candidate);
       }
     } catch (e) {
-      this.log(e, "error");
+      this.app.logger(e, "error");
     }
   }
 
   open(): void {
-    this.log("open");
+    this.app.logger("open");
   }
 
   send(msg: Message): void {

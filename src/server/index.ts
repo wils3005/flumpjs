@@ -2,36 +2,47 @@ import * as Zod from "zod";
 import Connection from "./connection";
 import Express from "express";
 import ExpressPinoLogger from "express-pino-logger";
-import HTTP from "http";
-import KnexWrapper from "./knex-wrapper";
-import Logger from "../shared/logger";
+import Knex from "knex";
+import Path from "path";
+import Pino from "pino";
 import REPL from "repl";
+import User from "./models/user";
 import WebSocket from "ws";
 
 class Server {
   env = Zod.object({
+    NODE_ENV: Zod.string(),
     PORT: Zod.string(),
     REPL: Zod.string().optional(),
     STATIC_PATH: Zod.string(),
   }).parse(process.env);
 
-  knex = new KnexWrapper().knex;
+  logger = Pino({
+    level: "debug",
+  });
+
+  knex = Knex({
+    client: "sqlite3",
+    connection: {
+      filename: Path.join(process.cwd(), `${this.env.NODE_ENV}.sqlite3`),
+    },
+    useNullAsDefault: true,
+  });
+
   express: Express.Express = Express();
-  httpServer: HTTP.Server;
-  log = Logger.log.bind(this);
-  webSocketServer: WebSocket.Server;
+  httpServer = this.express.listen(this.env.PORT);
+  webSocketServer = new WebSocket.Server({ server: this.httpServer });
 
   constructor() {
-    this.express.use(ExpressPinoLogger({ logger: Logger.pino }));
+    User.knex(this.knex);
+
+    this.express.use(ExpressPinoLogger({ logger: this.logger }));
     this.express.use(Express.static(this.env.STATIC_PATH));
 
-    this.httpServer = this.express.listen(this.env.PORT);
-
-    this.webSocketServer = new WebSocket.Server({ server: this.httpServer });
-    this.webSocketServer.on("close", () => this.log("close", "warn"));
-    this.webSocketServer.on("connection", (x) => new Connection(x));
-    this.webSocketServer.on("error", () => this.log("error", "error"));
-    this.webSocketServer.on("headers", () => this.log("headers"));
+    this.webSocketServer.on("close", () => this.logger.info("close"));
+    this.webSocketServer.on("connection", (x) => new Connection(this, x));
+    this.webSocketServer.on("error", () => this.logger.error("error"));
+    this.webSocketServer.on("headers", () => this.logger.info("headers"));
 
     if (this.env.REPL) {
       Object.assign(REPL.start("repl> ").context, { app: this });

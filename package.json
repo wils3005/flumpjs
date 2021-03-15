@@ -42,11 +42,12 @@
     "eslint-config-prettier": "7.2.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-prettier": "3.3.1",
+    "eventemitter3": "^4.0.7",
     "nodemon": "^2.0.7",
     "npm-check": "^5.9.2",
+    "peerjs-js-binarypack": "^1.0.1",
     "phaser": "^3.52.0",
     "pino-pretty": "^4.5.0",
-    "pnpm": "^5.17.2",
     "prettier": "2.2.1",
     "rimraf": "^3.0.2",
     "terser-webpack-plugin": "^5.1.1",
@@ -59,6 +60,7 @@
     "webpack-cli": "^4.5.0",
     "webpack-dev-middleware": "^4.1.0",
     "webpack-dev-server": "^3.11.2",
-    "webpack-node-externals": "^2.5.2"
+    "webpack-node-externals": "^2.5.2",
+    "webrtc-adapter": "^7.7.0"
   }
 }

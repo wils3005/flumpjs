@@ -1,7 +1,7 @@
 import * as UUID from "uuid";
 import * as Zod from "zod";
-import Logger from "../shared/logger";
 import Message from "./message";
+import Server from ".";
 import WebSocket from "ws";
 
 class Connection {
@@ -11,11 +11,12 @@ class Connection {
     return Array.from(this.all.keys());
   }
 
-  log = Logger.log.bind(this);
   id = UUID.v4();
+  app: Server;
   webSocket: WebSocket;
 
-  constructor(webSocket: WebSocket) {
+  constructor(app: Server, webSocket: WebSocket) {
+    this.app = app;
     this.webSocket = webSocket;
     webSocket.onclose = () => this.close();
     webSocket.onerror = (x) => this.error(x);
@@ -30,22 +31,22 @@ class Connection {
   }
 
   close(): void {
-    this.log("close");
+    this.app.logger.info("close");
     Connection.all.delete(this.id);
   }
 
   error(event: WebSocket.ErrorEvent): void {
-    this.log("error", "error");
+    this.app.logger.error("error");
     event.target.close();
     Connection.all.delete(this.id);
   }
 
   message(event: WebSocket.MessageEvent): void {
     const message = Message.parse(event.data);
-
-    this.log(
-      `receiving from ${message.sender}; sending to ${message.recipient}`
-    );
+    if (message.sender != this.id) {
+      this.webSocket.emit("error");
+      return;
+    }
 
     Zod.instanceof(Connection)
       .parse(Connection.all.get(message.recipient))
@@ -53,7 +54,7 @@ class Connection {
   }
 
   open(): void {
-    this.log("open");
+    this.app.logger.debug("open");
   }
 
   send(msg: Message): void {

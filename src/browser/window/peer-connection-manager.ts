@@ -1,7 +1,6 @@
-import Logger from "../../shared/logger";
 import Message from "./message";
 import WebSocketManager from "./web-socket-manager";
-import WindowApplication from ".";
+import BrowserApplication from "..";
 
 class PeerConnectionManager {
   static all = new Map<string, PeerConnectionManager>();
@@ -17,12 +16,11 @@ class PeerConnectionManager {
   };
 
   id: string;
-  app: WindowApplication;
+  app: BrowserApplication;
   wsm: WebSocketManager;
-  log = Logger.log.bind(this);
   connection: RTCPeerConnection;
 
-  constructor(id: string, app: WindowApplication, wsm: WebSocketManager) {
+  constructor(id: string, app: BrowserApplication, wsm: WebSocketManager) {
     this.id = id;
     this.app = app;
     this.wsm = wsm;
@@ -36,16 +34,17 @@ class PeerConnectionManager {
     connection.onicecandidate = (x) => this.iceCandidate(x); // TODO
     connection.oniceconnectionstatechange = (x) =>
       this.iceConnectionStateChange(x); // TODO
+    // ondatachannel
     connection.onnegotiationneeded = (x) => this.negotiationNeeded(x); // TODO
     connection.ontrack = (x) => this.track(x); // TODO
 
     connection.onconnectionstatechange = (x) =>
-      this.log(connection.connectionState);
-    // connection.ondatachannel = (x) => this.log(x);
-    connection.onicecandidateerror = (x) => this.log(x, "error");
-    // connection.onicegatheringstatechange = (x) => this.log(x);
-    // connection.onsignalingstatechange = (x) => this.log(x);
-    // connection.onstatsended = (x) => this.log(x);
+      this.app.logger(connection.connectionState);
+    // connection.ondatachannel = (x) => this.logger(x);
+    connection.onicecandidateerror = (x) => this.app.logger(x, "error");
+    // connection.onicegatheringstatechange = (x) => this.logger(x);
+    // connection.onsignalingstatechange = (x) => this.logger(x);
+    // connection.onstatsended = (x) => this.logger(x);
 
     return connection;
   }
@@ -79,11 +78,13 @@ class PeerConnectionManager {
   }
 
   connectionStateChange(event: Event): void {
-    this.log(`connectionStateChange: ${this.connection.connectionState}`);
+    this.app.logger(
+      `connectionStateChange: ${this.connection.connectionState}`
+    );
   }
 
   iceCandidate(event: RTCPeerConnectionIceEvent): void {
-    this.log("iceCandidate");
+    this.app.logger("iceCandidate");
     if (!event.candidate) return;
 
     this.wsm.send(
@@ -96,15 +97,15 @@ class PeerConnectionManager {
   }
 
   iceConnectionStateChange(event: Event): void {
-    this.log("iceConnectionStateChange");
+    this.app.logger("iceConnectionStateChange");
   }
 
   negotiationNeeded(event: Event): void {
-    this.log("negotiationNeeded");
+    this.app.logger("negotiationNeeded");
   }
 
   track(event: RTCTrackEvent): void {
-    this.log("track");
+    this.app.logger("track");
   }
 
   handleStream(stream: MediaStream): void {

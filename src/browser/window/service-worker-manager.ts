@@ -1,18 +1,16 @@
 import * as Zod from "zod";
-import Logger from "../../shared/logger";
-import WindowApplication from ".";
+import BrowserApplication from "..";
 
 class ServiceWorkerManager {
   static readonly SW_URL = "app.js";
 
-  app: WindowApplication;
-  log = Logger.log.bind(this);
+  app: BrowserApplication;
 
   private _container?: ServiceWorkerContainer;
   private _registration?: ServiceWorkerRegistration;
   private _worker?: ServiceWorker;
 
-  constructor(app: WindowApplication) {
+  constructor(app: BrowserApplication) {
     this.app = app;
     this.container = globalThis.navigator.serviceWorker;
   }
@@ -22,14 +20,14 @@ class ServiceWorkerManager {
   }
 
   set container(container: ServiceWorkerContainer) {
-    container.oncontrollerchange = () => this.log("controllerChange");
-    container.onmessage = () => this.log("message");
-    container.onmessageerror = () => this.log("messageError", "error");
+    container.oncontrollerchange = () => this.app.logger("controllerChange");
+    container.onmessage = () => this.app.logger("message");
+    container.onmessageerror = () => this.app.logger("messageError", "error");
 
     void container
       .register(ServiceWorkerManager.SW_URL)
       .then((registration) => (this.registration = registration))
-      .catch((r) => this.log(r, "error"));
+      .catch((r) => this.app.logger(r, "error"));
 
     this._container = container;
   }
@@ -40,7 +38,7 @@ class ServiceWorkerManager {
 
   set registration(registration: ServiceWorkerRegistration) {
     if (registration) {
-      registration.onupdatefound = () => this.log("upgradeFound");
+      registration.onupdatefound = () => this.app.logger("upgradeFound");
       registration.update().catch(() => this.error());
       const serviceWorker =
         registration.installing ?? registration.waiting ?? registration.active;
@@ -57,7 +55,7 @@ class ServiceWorkerManager {
 
   set worker(worker: ServiceWorker) {
     if (worker) {
-      worker.onstatechange = () => this.log("stateChange");
+      worker.onstatechange = () => this.app.logger("stateChange");
       worker.onerror = () => this.error();
     }
 
@@ -65,7 +63,7 @@ class ServiceWorkerManager {
   }
 
   error(): void {
-    this.log("error", "error");
+    this.app.logger("error", "error");
   }
 }
 

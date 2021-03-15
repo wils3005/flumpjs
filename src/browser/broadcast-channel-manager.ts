@@ -1,18 +1,15 @@
-import Logger from "../shared/logger";
-import ServiceWorkerApplication from "./service-worker";
-import WindowApplication from "./window";
+import BrowserApplication from ".";
 
 class BroadcastChannelManager {
   static BROADCAST_CHANNEL_NAME = "broadcast-channel-1";
 
-  app: WindowApplication | ServiceWorkerApplication;
+  app: BrowserApplication;
   bc = new BroadcastChannel(BroadcastChannelManager.BROADCAST_CHANNEL_NAME);
-  log = Logger.log.bind(this);
 
-  constructor(app: WindowApplication | ServiceWorkerApplication) {
+  constructor(app: BrowserApplication) {
     this.app = app;
-    this.bc.onmessage = (ev) => this.log(ev);
-    this.bc.onmessageerror = (ev) => this.log(ev);
+    this.bc.onmessage = (ev) => this.app.logger(ev);
+    this.bc.onmessageerror = (ev) => this.app.logger(ev);
   }
 }
 
