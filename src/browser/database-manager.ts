@@ -1,5 +1,5 @@
 import * as Zod from "zod";
-import Config from "./config";
+import Config from "../shared/config";
 
 class DatabaseManager {
   static NAME = "db1";
@@ -8,7 +8,7 @@ class DatabaseManager {
 
   config: Config;
 
-  logger: typeof Config.prototype.logger;
+  log: typeof Config.prototype.log;
 
   request: IDBOpenDBRequest;
 
@@ -16,12 +16,13 @@ class DatabaseManager {
 
   constructor(config: Config) {
     this.config = config;
-    this.logger = this.config.logger.bind(this);
+    this.log = this.config.log.bind(this);
     this.request = globalThis.indexedDB.open(DatabaseManager.NAME);
-    this.request.onblocked = (x) => this.logger(x, "warn");
-    this.request.onerror = (x) => this.logger(x, "error");
+    this.request.onblocked = (x) => this.log(x, "warn");
+    this.request.onerror = (x) => this.log(x, "error");
     this.request.onsuccess = (x) => this.success(x);
     this.request.onupgradeneeded = (x) => this.upgradeNeeded(x);
+    this.log("constructor");
   }
 
   get(query: string): IDBRequest {
@@ -43,15 +44,15 @@ class DatabaseManager {
 
   private success(event: Event): void {
     const db = Zod.instanceof(IDBOpenDBRequest).parse(event.target).result;
-    db.onabort = (ev) => this.logger(ev, "warn");
-    db.onclose = (ev) => this.logger(ev);
-    db.onerror = (ev) => this.logger(ev, "error");
-    db.onversionchange = (ev) => this.logger(ev);
+    db.onabort = (ev) => this.log(ev, "warn");
+    db.onclose = (ev) => this.log(ev);
+    db.onerror = (ev) => this.log(ev, "error");
+    db.onversionchange = (ev) => this.log(ev);
     this.db = db;
   }
 
   private upgradeNeeded(event: IDBVersionChangeEvent): void {
-    this.logger("upgradeNeeded");
+    this.log("upgradeNeeded");
 
     Zod.instanceof(IDBDatabase)
       .parse(Zod.instanceof(IDBRequest).parse(event.target).result)
@@ -62,3 +63,14 @@ class DatabaseManager {
 }
 
 export default DatabaseManager;
+
+// getID(): string {
+//   if (this.id) return this.id;
+
+//   return Zod.string().parse(this.databaseManager.get("id").result);
+// }
+
+// setID(id: string): void {
+//   this.databaseManager.put("id", id);
+//   this.id = id;
+// }

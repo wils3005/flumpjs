@@ -28,9 +28,7 @@
   "plugins": ["import", "prettier"],
   "root": true,
   "rules": {
-    "sort-imports": "warn",
-
-    "import/no-relative-parent-imports": "warn",
+    "import/no-relative-parent-imports": "off",
     "import/order": [
       "warn",
       {

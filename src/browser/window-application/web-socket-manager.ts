@@ -1,20 +1,20 @@
-import Config from "../config";
-import Message from "./message";
+import Config from "../../shared/config";
+import Message from "../../shared/message";
 
 class WebSocketManager {
   static readonly WS_URL = "ws://localhost:8080";
 
   config: Config;
 
-  logger: typeof Config.prototype.logger;
+  log: typeof Config.prototype.log;
 
   webSocket: WebSocket;
 
   constructor(config: Config) {
     this.config = config;
-    this.logger = config.logger.bind(this);
+    this.log = config.log.bind(this);
     this.webSocket = this.create();
-    this.logger("constructor");
+    this.log("constructor");
   }
 
   create(): WebSocket {
@@ -27,11 +27,11 @@ class WebSocketManager {
   }
 
   close(): void {
-    this.logger("close");
+    this.log("close");
   }
 
   error(): void {
-    this.logger("error", "error");
+    this.log("error", "error");
     this.webSocket.close();
   }
 
@@ -68,18 +68,18 @@ class WebSocketManager {
       // }
 
       // if (message.candidate) {
-      //   this.logger({ wat: message });
+      //   this.log({ wat: message });
       //   await Zod.instanceof(PeerConnectionManager)
       //     .parse(PeerConnectionManager.all.get(message.sender))
       //     .connection.addIceCandidate(message.candidate);
       // }
     } catch (e) {
-      this.logger(e, "error");
+      this.log(e, "error");
     }
   }
 
   open(): void {
-    this.logger("open");
+    this.log("open");
   }
 
   send(msg: Message): void {

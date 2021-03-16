@@ -10,13 +10,21 @@ class Config {
     level: "debug",
   });
 
-  logger(msg: unknown, level: LogLevel = "debug"): void {
+  static globalName = globalThis.constructor.name;
+
+  log(msg: unknown, level: LogLevel = "debug"): void {
     Config.pino[level]({
-      globalName: globalThis.constructor.name,
+      globalName: Config.globalName,
       name: this.constructor.name,
       msg,
     });
   }
+
+  constructor() {
+    this.log("constructor");
+  }
 }
+
+Object.assign(globalThis, { Config });
 
 export default Config;

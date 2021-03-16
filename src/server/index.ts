@@ -1,25 +1,23 @@
+import Path from "path";
 import * as Zod from "zod";
 import Express from "express";
 import ExpressPinoLogger from "express-pino-logger";
 import Knex from "knex";
-import Path from "path";
-import Pino from "pino";
-import REPL from "repl";
 import WebSocket from "ws";
+import Config from "../shared/config";
 import User from "./models/user";
 import Connection from "./connection";
 
-class Server {
+class ServerApplication {
   env = Zod.object({
     NODE_ENV: Zod.string(),
     PORT: Zod.string(),
-    REPL: Zod.string().optional(),
     STATIC_PATH: Zod.string(),
   }).parse(process.env);
 
-  logger = Pino({
-    level: "debug",
-  });
+  config: Config;
+
+  log: typeof Config.prototype.log;
 
   knex = Knex({
     client: "sqlite3",
@@ -35,23 +33,37 @@ class Server {
 
   webSocketServer = new WebSocket.Server({ server: this.httpServer });
 
-  constructor() {
+  constructor(config: Config) {
+    this.config = config;
+    this.log = this.config.log.bind(this);
     User.knex(this.knex);
 
-    this.express.use(ExpressPinoLogger({ logger: this.logger }));
+    this.express.use(ExpressPinoLogger({ logger: Config.pino }));
     this.express.use(Express.static(this.env.STATIC_PATH));
 
-    this.webSocketServer.on("close", () => this.logger.info("close"));
-    this.webSocketServer.on("connection", (x) => new Connection(this, x));
-    this.webSocketServer.on("error", () => this.logger.error("error"));
-    this.webSocketServer.on("headers", () => this.logger.info("headers"));
+    this.webSocketServer.on("close", () => this.close());
+    this.webSocketServer.on("connection", (x) => this.connection(x));
+    this.webSocketServer.on("error", () => this.error());
+    this.webSocketServer.on("headers", () => this.headers());
+  }
 
-    if (this.env.REPL) {
-      Object.assign(REPL.start("repl> ").context, { app: this });
-    }
+  close(): void {
+    this.log("close");
+  }
+
+  connection(socket: WebSocket): void {
+    new Connection(this.config, socket);
+  }
+
+  error(): void {
+    this.log("error", "error");
+  }
+
+  headers(): void {
+    this.log("headers");
   }
 }
 
-new Server();
+Object.assign(globalThis, { app: new ServerApplication(new Config()) });
 
-export default Server;
+export default ServerApplication;

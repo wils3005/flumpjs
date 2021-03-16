@@ -1,8 +1,8 @@
 import * as UUID from "uuid";
 import * as Zod from "zod";
 import WebSocket from "ws";
-import Message from "./message";
-import Server from ".";
+import Config from "../shared/config";
+import Message from "../shared/message";
 
 class Connection {
   static readonly all = new Map<string, Connection>();
@@ -11,14 +11,17 @@ class Connection {
     return Array.from(this.all.keys());
   }
 
-  id = UUID.v4();
+  config: Config;
 
-  app: Server;
+  log: typeof Config.prototype.log;
+
+  id = UUID.v4();
 
   webSocket: WebSocket;
 
-  constructor(app: Server, webSocket: WebSocket) {
-    this.app = app;
+  constructor(config: Config, webSocket: WebSocket) {
+    this.config = config;
+    this.log = config.log.bind(this);
     this.webSocket = webSocket;
     webSocket.onclose = () => this.close();
     webSocket.onerror = (x) => this.error(x);
@@ -33,12 +36,12 @@ class Connection {
   }
 
   close(): void {
-    this.app.logger.info("close");
+    this.log("close");
     Connection.all.delete(this.id);
   }
 
   error(event: WebSocket.ErrorEvent): void {
-    this.app.logger.error("error");
+    this.log("error", "error");
     event.target.close();
     Connection.all.delete(this.id);
   }
@@ -56,7 +59,7 @@ class Connection {
   }
 
   open(): void {
-    this.app.logger.debug("open");
+    this.log("open");
   }
 
   send(msg: Message): void {

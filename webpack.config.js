@@ -26,16 +26,13 @@ const base = {
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          keep_classnames: true,
-          keep_fnames: true,
+          mangle: {
+            keep_classnames: true,
+            keep_fnames: true,
+          },
         },
       }),
     ],
-  },
-  output: {
-    assetModuleFilename: "[name][ext]",
-    globalObject: "this",
-    path: Path.join(__dirname, "dist", "server"),
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
@@ -49,10 +46,15 @@ const server = {
   },
   externalsPresets: { node: true },
   externals: [WebpackNodeExternals()],
+  output: {
+    assetModuleFilename: "[name][ext]",
+    globalObject: "this",
+    path: Path.join(__dirname, "dist", "server"),
+  },
   target: "node",
 };
 
-const client = {
+const browser = {
   ...base,
   entry: {
     app: Path.join(__dirname, "src", "browser", "index.ts"),
@@ -64,6 +66,18 @@ const client = {
   },
 };
 
-const config = [server, client];
+const config = [server, browser];
 
 export default config;
+
+// optimization: {
+//   minimize: true,
+//   minimizer: [
+//     new TerserPlugin({
+//       terserOptions: {
+//         keep_classnames: true,
+//         keep_fnames: true,
+//       },
+//     }),
+//   ],
+// }

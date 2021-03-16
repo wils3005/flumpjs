@@ -1,14 +1,14 @@
-import Config from "./config";
+import Config from "../shared/config";
 
 class ServiceWorkerApplication {
   config: Config;
 
-  logger: typeof Config.prototype.logger;
+  log: typeof Config.prototype.log;
 
   constructor(config: Config) {
     this.config = config;
-    this.logger = config.logger.bind(this);
-    this.logger("constructor");
+    this.log = config.log.bind(this);
+    this.log("constructor");
   }
 }
 
