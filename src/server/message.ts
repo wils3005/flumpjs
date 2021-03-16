@@ -24,11 +24,17 @@ class Message {
   }
 
   messageOptions: MessageOptions;
+
   sender: string;
+
   recipient: string;
+
   ids?: string[];
+
   offer?: RTCSessionDescriptionInit;
+
   answer?: RTCSessionDescriptionInit;
+
   candidate?: unknown;
 
   constructor(messageOptions: MessageOptions) {

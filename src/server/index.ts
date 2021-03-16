@@ -1,13 +1,13 @@
 import * as Zod from "zod";
-import Connection from "./connection";
 import Express from "express";
 import ExpressPinoLogger from "express-pino-logger";
 import Knex from "knex";
 import Path from "path";
 import Pino from "pino";
 import REPL from "repl";
-import User from "./models/user";
 import WebSocket from "ws";
+import User from "./models/user";
+import Connection from "./connection";
 
 class Server {
   env = Zod.object({
@@ -30,7 +30,9 @@ class Server {
   });
 
   express: Express.Express = Express();
+
   httpServer = this.express.listen(this.env.PORT);
+
   webSocketServer = new WebSocket.Server({ server: this.httpServer });
 
   constructor() {

@@ -40,11 +40,17 @@ class Message {
   }
 
   messageOptions: MessageOptions;
+
   sender: string;
+
   recipient: string;
+
   ids?: string[];
+
   offer?: RTCSessionDescriptionInit;
+
   answer?: RTCSessionDescriptionInit;
+
   candidate?: RTCIceCandidate;
 
   constructor(messageOptions: MessageOptions) {

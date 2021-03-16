@@ -7,7 +7,9 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:prettier/recommended"
   ],
   "ignorePatterns": [
@@ -17,29 +19,24 @@
     "dist/",
     "node_modules/",
     "public/",
-    "src/types/phaser/",
     "tmp/"
-  ],
-  "overrides": [
-    {
-      "files": ["**/*.ts", "**/*.tsx"],
-      "extends": [
-        "plugin:import/typescript",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
-      ]
-    }
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["tsconfig.json"]
   },
+  "plugins": ["import", "prettier"],
   "root": true,
   "rules": {
-    "import/exports-last": "warn",
-    "import/no-anonymous-default-export": "warn",
+    "sort-imports": "warn",
+
     "import/no-relative-parent-imports": "warn",
-    "sort-imports": "warn"
+    "import/order": [
+      "warn",
+      {
+        "groups": ["builtin", "external", "parent", "sibling", "index"]
+      }
+    ]
   },
   "settings": {
     "import/parsers": {

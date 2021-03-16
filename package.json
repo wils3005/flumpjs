@@ -2,7 +2,7 @@
   "name": "@wilsjs/app",
   "private": true,
   "scripts": {
-    "prebuild": "rm -rf dist/",
+    "prebuild": "rimraf dist/",
     "build": "npm run ts-node -- node_modules/webpack/bin/webpack",
     "knex": "npm run ts-node -- ./node_modules/knex/bin/cli.js",
     "knex:make": "npm run knex -- migrate:make",

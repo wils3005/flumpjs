@@ -1,15 +1,19 @@
-import BrowserApplication from ".";
+import Config from "./config";
 
 class BroadcastChannelManager {
   static BROADCAST_CHANNEL_NAME = "broadcast-channel-1";
 
-  app: BrowserApplication;
+  config: Config;
+
+  logger: typeof Config.prototype.logger;
+
   bc = new BroadcastChannel(BroadcastChannelManager.BROADCAST_CHANNEL_NAME);
 
-  constructor(app: BrowserApplication) {
-    this.app = app;
-    this.bc.onmessage = (ev) => this.app.logger(ev);
-    this.bc.onmessageerror = (ev) => this.app.logger(ev);
+  constructor(config: Config) {
+    this.config = config;
+    this.logger = config.logger.bind(this);
+    this.bc.onmessage = (ev) => this.logger(ev);
+    this.bc.onmessageerror = (ev) => this.logger(ev);
   }
 }
 

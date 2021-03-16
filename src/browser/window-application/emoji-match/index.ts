@@ -1,8 +1,12 @@
-import BrowserApplication from "../..";
-import MyScene from "./scenes/my-scene";
 import Phaser from "phaser";
+import Config from "../../config";
+import MyScene from "./scenes/my-scene";
 
 class EmojiMatch {
+  config: Config;
+
+  logger: typeof Config.prototype.logger;
+
   gameConfig = {
     type: Phaser.AUTO,
     width: 600,
@@ -14,11 +18,10 @@ class EmojiMatch {
 
   game = new Phaser.Game(this.gameConfig);
 
-  app: BrowserApplication;
-
-  constructor(app: BrowserApplication) {
-    this.app = app;
-    this.app.logger("EmojiMatch.constructor");
+  constructor(config: Config) {
+    this.config = config;
+    this.logger = config.logger.bind(this);
+    this.logger("constructor");
   }
 }
 

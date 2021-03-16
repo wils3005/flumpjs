@@ -1,8 +1,8 @@
 import * as UUID from "uuid";
 import * as Zod from "zod";
+import WebSocket from "ws";
 import Message from "./message";
 import Server from ".";
-import WebSocket from "ws";
 
 class Connection {
   static readonly all = new Map<string, Connection>();
@@ -12,7 +12,9 @@ class Connection {
   }
 
   id = UUID.v4();
+
   app: Server;
+
   webSocket: WebSocket;
 
   constructor(app: Server, webSocket: WebSocket) {

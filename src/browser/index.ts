@@ -1,59 +1,58 @@
-import * as Zod from "zod";
+// import * as Zod from "zod";
 import BroadcastChannelManager from "./broadcast-channel-manager";
+import Config from "./config";
 import DatabaseManager from "./database-manager";
-import Pino from "pino";
-
-type LogLevel = Zod.infer<typeof BrowserApplication.LogLevel>;
+import ServiceWorkerApplication from "./service-worker-application";
+import WindowApplication from "./window-application";
 
 class BrowserApplication {
-  static LogLevel = Zod.enum(["trace", "debug", "info", "warn", "error"]);
+  config = new Config();
 
-  static pino = Pino({
-    level: "debug",
-  });
+  logger = this.config.logger.bind(this);
 
-  bcManager: BroadcastChannelManager = new BroadcastChannelManager(this);
-  databaseManager = new DatabaseManager(this);
+  bcManager: BroadcastChannelManager = new BroadcastChannelManager(this.config);
 
-  private _id?: string;
+  databaseManager = new DatabaseManager(this.config);
+
+  id?: string;
+
+  window?: WindowApplication;
+
+  serviceWorker?: ServiceWorkerApplication;
 
   constructor() {
     switch (globalThis.constructor.name) {
       case "ServiceWorkerGlobalScope":
-        void import("./service-worker").then((x) => {
-          Object.assign(globalThis, { app: new x.default(this) });
-        });
+        import("./service-worker-application")
+          .then((x) => (this.serviceWorker = new x.default(this)))
+          .catch((x) => this.logger(x));
+
         break;
       case "Window":
-        void import("./window").then((x) => {
-          Object.assign(globalThis, { app: new x.default(this) });
-        });
+        import("./window-application")
+          .then((x) => (this.window = new x.default(this)))
+          .catch((x) => this.logger(x));
+
         break;
       default:
-        throw "oh no";
+        throw new Error("oh no");
     }
+
+    this.logger("constructor");
   }
 
-  getID(): string {
-    if (this._id) return this._id;
+  // getID(): string {
+  //   if (this.id) return this.id;
 
-    return Zod.string().parse(this.databaseManager.get("id").result);
-  }
+  //   return Zod.string().parse(this.databaseManager.get("id").result);
+  // }
 
-  setID(id: string): void {
-    this.databaseManager.put("id", id);
-    this._id = id;
-  }
-
-  logger(msg: unknown, level: LogLevel = "debug"): void {
-    BrowserApplication.pino[level]({
-      globalName: globalThis.constructor.name,
-      name: this.constructor.name,
-      msg,
-    });
-  }
+  // setID(id: string): void {
+  //   this.databaseManager.put("id", id);
+  //   this.id = id;
+  // }
 }
 
-new BrowserApplication();
+Object.assign(globalThis, { app: new BrowserApplication() });
 
 export default BrowserApplication;

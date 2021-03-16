@@ -1,5 +1,5 @@
 import * as Zod from "zod";
-import BrowserApplication from "..";
+import Config from "../config";
 
 class VideoElementManager {
   static readonly CONSTRAINTS = {
@@ -7,18 +7,24 @@ class VideoElementManager {
     audio: true,
   };
 
-  app: BrowserApplication;
+  config: Config;
+
+  logger: typeof Config.prototype.logger;
 
   private _element?: HTMLVideoElement;
+
   private _stream?: MediaStream;
 
-  constructor(app: BrowserApplication) {
-    this.app = app;
+  constructor(config: Config) {
+    this.config = config;
+    this.logger = config.logger.bind(this);
 
     globalThis.navigator.mediaDevices
       .getUserMedia(VideoElementManager.CONSTRAINTS)
       .then((x) => (this.stream = x))
-      .catch((x) => this.app.logger(x, "error"));
+      .catch((x) => this.logger(x, "error"));
+
+    this.logger("constructor");
   }
 
   get element(): HTMLVideoElement {
@@ -26,7 +32,7 @@ class VideoElementManager {
   }
 
   set element(element: HTMLVideoElement) {
-    element.onerror = (ev) => this.app.logger(ev, "error");
+    element.onerror = (ev) => this.logger(ev, "error");
     element.autoplay = true;
 
     // local or remote stream?
@@ -43,8 +49,8 @@ class VideoElementManager {
   }
 
   set stream(stream: MediaStream) {
-    stream.onaddtrack = (ev) => this.app.logger(ev);
-    stream.onremovetrack = (ev) => this.app.logger(ev);
+    stream.onaddtrack = (ev) => this.logger(ev);
+    stream.onremovetrack = (ev) => this.logger(ev);
     this.element = globalThis.document.createElement("video");
     this.element.srcObject = stream;
     this._stream = stream;
