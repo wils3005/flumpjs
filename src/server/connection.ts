@@ -1,8 +1,7 @@
 import * as UUID from "uuid";
 import * as Zod from "zod";
 import WebSocket from "ws";
-import Config from "../shared/config";
-import Message from "../shared/message";
+import { Config, Message } from "../shared";
 
 class Connection {
   static readonly all = new Map<string, Connection>();
@@ -67,4 +66,4 @@ class Connection {
   }
 }
 
-export default Connection;
+export { Connection };

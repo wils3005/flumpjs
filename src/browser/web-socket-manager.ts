@@ -1,5 +1,4 @@
-import Config from "../../shared/config";
-import Message from "../../shared/message";
+import { Config, Message } from "../shared";
 
 class WebSocketManager {
   static readonly WS_URL = "ws://localhost:8080";
@@ -18,6 +17,7 @@ class WebSocketManager {
   }
 
   create(): WebSocket {
+    this.log("create");
     const webSocket = new WebSocket(WebSocketManager.WS_URL);
     webSocket.onclose = () => this.close();
     webSocket.onerror = () => this.error();
@@ -36,6 +36,8 @@ class WebSocketManager {
   }
 
   message(event: MessageEvent<unknown>): void {
+    this.log("message");
+
     try {
       const message = Message.parse(event.data);
 
@@ -83,8 +85,9 @@ class WebSocketManager {
   }
 
   send(msg: Message): void {
+    this.log("send");
     this.webSocket.send(msg.toString());
   }
 }
 
-export default WebSocketManager;
+export { WebSocketManager };

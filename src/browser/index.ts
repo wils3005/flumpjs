@@ -1,9 +1,8 @@
-// import * as Zod from "zod";
-import Config from "../shared/config";
-import BroadcastChannelManager from "./broadcast-channel-manager";
-import DatabaseManager from "./database-manager";
-import ServiceWorkerApplication from "./service-worker-application";
-import WindowApplication from "./window-application";
+import { Config } from "../shared";
+import { BroadcastChannelManager } from "./broadcast-channel-manager";
+import { DatabaseManager } from "./database-manager";
+import { ServiceWorkerApplication } from "./service-worker-application";
+import { WindowApplication } from "./window-application";
 
 class BrowserApplication {
   log: typeof Config.prototype.log;
@@ -24,13 +23,15 @@ class BrowserApplication {
     switch (Config.globalName) {
       case "ServiceWorkerGlobalScope":
         import("./service-worker-application")
-          .then((x) => (this.serviceWorker = new x.default(config)))
+          .then(
+            (x) => (this.serviceWorker = new x.ServiceWorkerApplication(config))
+          )
           .catch((x) => this.log(x));
 
         break;
       case "Window":
         import("./window-application")
-          .then((x) => (this.window = new x.default(config)))
+          .then((x) => (this.window = new x.WindowApplication(config)))
           .catch((x) => this.log(x));
 
         break;
@@ -44,4 +45,4 @@ class BrowserApplication {
 
 Object.assign(globalThis, { app: new BrowserApplication(new Config()) });
 
-export default BrowserApplication;
+export { BrowserApplication };

@@ -4,9 +4,9 @@ import Express from "express";
 import ExpressPinoLogger from "express-pino-logger";
 import Knex from "knex";
 import WebSocket from "ws";
-import Config from "../shared/config";
-import User from "./models/user";
-import Connection from "./connection";
+import { Config } from "../shared";
+import { User } from "./models/user";
+import { Connection } from "./connection";
 
 class ServerApplication {
   env = Zod.object({
@@ -66,4 +66,4 @@ class ServerApplication {
 
 Object.assign(globalThis, { app: new ServerApplication(new Config()) });
 
-export default ServerApplication;
+export { ServerApplication };

@@ -1,5 +1,5 @@
 import * as Zod from "zod";
-import Config from "../shared/config";
+import { Config } from "../shared";
 
 class DatabaseManager {
   static NAME = "db1";
@@ -62,7 +62,7 @@ class DatabaseManager {
   }
 }
 
-export default DatabaseManager;
+export { DatabaseManager };
 
 // getID(): string {
 //   if (this.id) return this.id;

@@ -1,9 +1,9 @@
 import "./app.css";
 import "./favicon.ico";
 import "./index.html";
-import Config from "../../shared/config";
-import ServiceWorkerManager from "./service-worker-manager";
-import WebSocketManager from "./web-socket-manager";
+import { Config } from "../../shared/config";
+import { WebSocketManager } from "../web-socket-manager";
+import { ServiceWorkerManager } from "./service-worker-manager";
 
 class WindowApplication {
   config: Config;
@@ -23,4 +23,4 @@ class WindowApplication {
   }
 }
 
-export default WindowApplication;
+export { WindowApplication };

@@ -1,4 +1,4 @@
-import Config from "../shared/config";
+import { Config } from "../shared";
 
 class ServiceWorkerApplication {
   config: Config;
@@ -12,4 +12,4 @@ class ServiceWorkerApplication {
   }
 }
 
-export default ServiceWorkerApplication;
+export { ServiceWorkerApplication };

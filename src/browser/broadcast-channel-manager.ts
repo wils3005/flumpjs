@@ -1,4 +1,4 @@
-import Config from "../shared/config";
+import { Config } from "../shared";
 
 class BroadcastChannelManager {
   static BROADCAST_CHANNEL_NAME = "broadcast-channel-1";
@@ -18,4 +18,4 @@ class BroadcastChannelManager {
   }
 }
 
-export default BroadcastChannelManager;
+export { BroadcastChannelManager };

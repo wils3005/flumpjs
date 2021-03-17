@@ -10,4 +10,4 @@ class User extends Objection.Model {
   password = "";
 }
 
-export default User;
+export { User };

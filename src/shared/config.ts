@@ -25,6 +25,4 @@ class Config {
   }
 }
 
-Object.assign(globalThis, { Config });
-
-export default Config;
+export { Config };

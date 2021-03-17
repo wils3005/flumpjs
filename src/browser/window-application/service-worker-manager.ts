@@ -1,4 +1,4 @@
-import Config from "../../shared/config";
+import { Config } from "../../shared/config";
 
 class ServiceWorkerManager {
   static readonly SW_URL = "app.js";
@@ -21,6 +21,7 @@ class ServiceWorkerManager {
   }
 
   setContainer(container: ServiceWorkerContainer): void {
+    this.log("setContainer");
     container.oncontrollerchange = () => this.log("controllerChange");
     container.onmessage = () => this.log("message");
     container.onmessageerror = () => this.log("messageError", "error");
@@ -34,6 +35,7 @@ class ServiceWorkerManager {
   }
 
   setRegistration(registration: ServiceWorkerRegistration): void {
+    this.log("setRegistration");
     registration.onupdatefound = () => this.log("upgradeFound");
     registration.update().catch(() => this.error());
 
@@ -46,6 +48,7 @@ class ServiceWorkerManager {
   }
 
   setWorker(worker: ServiceWorker): void {
+    this.log("setWorker");
     if (worker) {
       worker.onstatechange = () => this.log("stateChange");
       worker.onerror = () => this.error();
@@ -59,4 +62,4 @@ class ServiceWorkerManager {
   }
 }
 
-export default ServiceWorkerManager;
+export { ServiceWorkerManager };
